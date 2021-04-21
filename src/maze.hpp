@@ -64,9 +64,9 @@ public:
 
     // internal rand
     uint32_t seed;
-    void set(uint32_t s){seed=s; srand(seed);};
-    void next(){set(seed+1);};
-    void prev(){set(seed-1);};
+    void set_rng(uint32_t s){seed=s; srand(seed);};
+    void next_rng(){set(seed+1);};
+    void prev_rng(){set(seed-1);};
     bool coinbias(double x){
 #ifdef __XTENSA__
         yield();

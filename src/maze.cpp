@@ -73,8 +73,8 @@ void Maze::load_map(int32_t x, int32_t y)
 
     // construct maze, the [0][0] cell is [x-MAP_SIZE/2][y-MAP_SIZE/2]
     // set rng to the row above the first in maze[][]
-    set(x0-1);
     int32_t i=x0-1;
+    set_rng(i);
     while (i<x0+MAP_SIZE)
     {
         int32_t j=0;
@@ -125,6 +125,7 @@ void Maze::load_map(int32_t x, int32_t y)
                 ++j;
             }
         }
+        next_rng();
         ++i;
     }
 }
