@@ -30,7 +30,8 @@ You also can quickly compile and test with linux using the command: ```cd esp826
 
 If you want to see the part of maze loaded into memory you can use (you will have to install libSDL2 first): ```cd esp8266_maze/displayer && gcc displayer.c -lSDL2 -o display && g++ ../linux_maze.cpp ../src/*.cpp -I../src -o maze && ./maze out | ./display```
 
-This will create a screenshot.bmp inside esp8266_maze/displayer as ![this](https://user-images.githubusercontent.com/65669679/115507831-e82f7200-a27c-11eb-9026-265e40b75a56.png)
+This will create a screenshot.bmp inside esp8266_maze/displayer as ![screenshot](https://user-images.githubusercontent.com/65669679/115605475-d84a7900-a2e2-11eb-811f-e12ee4cb8b36.png)
+
 
 ## some details
 * This project is designed to run on an esp8266 and runs using https://github.com/akouz/coos for scheduling. You need to add it to your arduino ide library folder :)
