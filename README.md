@@ -1,12 +1,6 @@
 # esp8266_maze
 
 ## quick start
-You can quickly compile and test with linux using the command: ```cd esp8266_maze && g++ linux_maze.cpp src/*.cpp -Isrc -o maze && ./maze```
-
-If you want to see the part of maze loaded into memory you can use (you will have to install libSDL2 first): ```cd esp8266_maze/displayer && gcc displayer.c -lSDL2 -o display && g++ ../linux_maze.cpp ../src/*.cpp -I../src -o maze && ./maze out | ./display```
-
-This will create a screenshot.bmp inside esp8266_maze/displayer as ![this](https://user-images.githubusercontent.com/65669679/115507831-e82f7200-a27c-11eb-9026-265e40b75a56.png)
-
 To burn to an esp8266, you should be able to use the arduino ide and the .ino file in the src folder. Then you can connect with telnet (with this run I have a lot of chance finding the compass on the first move!):
 ```
 $ telnet 192.168.XXXX
@@ -30,7 +24,13 @@ Pos: 1000,1931 Possible paths: NS   Exit: 1000,1943
 Pos: 999,1931 Possible paths:  SEW Exit: 1000,1943
 Pos: 999,1932 Possible paths: N  W Exit: 1000,1943
 [...]
-``̀
+```
+
+You also can quickly compile and test with linux using the command: ```cd esp8266_maze && g++ linux_maze.cpp src/*.cpp -Isrc -o maze && ./maze```
+
+If you want to see the part of maze loaded into memory you can use (you will have to install libSDL2 first): ```cd esp8266_maze/displayer && gcc displayer.c -lSDL2 -o display && g++ ../linux_maze.cpp ../src/*.cpp -I../src -o maze && ./maze out | ./display```
+
+This will create a screenshot.bmp inside esp8266_maze/displayer as ![this](https://user-images.githubusercontent.com/65669679/115507831-e82f7200-a27c-11eb-9026-265e40b75a56.png)
 
 ## some details
 * This project is designed to run on an esp8266 and runs using https://github.com/akouz/coos for scheduling. You need to add it to your arduino ide library folder :)
