@@ -2,6 +2,7 @@
 #define ITEM_H
 #include <string>
 #include <vector>
+#include "utils.hpp"
 
 typedef enum{
     got_compass=1U,
@@ -26,15 +27,20 @@ class Item
         return ((x-ix)*(x-ix)+(y-iy)*(y-iy));
     };
 
-    virtual std::string display_cell(int32_t x, int32_t y) {
+    virtual std::string display_cell(int32_t x, int32_t y, uint32_t status) {
         return "";
     };
     virtual void update_status(int32_t x, int32_t y, uint32_t &status) {};
     virtual std::string display_text(int32_t x, int32_t y, uint32_t &status) {
         size_t i=0;
         while(i<cell_distance.size() && distance(x,y)>cell_distance[i]) {++i;}
-        if (i<cell_distance.size()) return cell_text[i];
-        else return "";
+        if (i<cell_distance.size())
+        {
+            // assert i<cell_show_direction.size() && i<cell_text.size()
+            if (cell_show_direction[i])
+                return cell_text[i]+direction(x,y);
+            else return cell_text[i];
+        } else return "";
     };
 
     protected:
@@ -42,6 +48,7 @@ class Item
     // this will be printed each time we're at cell_distance from the Item
     std::vector<std::string> cell_text;
     std::vector<uint32_t> cell_distance;
+    std::vector<bool> cell_show_direction;
 };
 
 #endif

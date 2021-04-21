@@ -2,11 +2,6 @@
 #include "Compass.hpp"
 #include "Exit.hpp"
 
-#include <sstream>
-#define SSTR( x ) static_cast< std::ostringstream & >( \
-        ( std::ostringstream() << std::dec << x ) ).str()
-
-
 #define display_walls(c) (is_open_((c),N)?' ':'N')<<(is_open_((c),S)?' ':'S')<<\
                          (is_open_((c),E)?' ':'E')<<(is_open_((c),W)?' ':'W')
 
@@ -31,26 +26,27 @@ bool Maze::is_set(int32_t x, int32_t y, t_cell d)
 
 void Maze::set_level(int32_t x, int32_t y)
 {
-    for(auto &i:items)
-        delete i;
+    items.clear();
     
     int32_t xi, yi;
 
-    xi=rand()%10-5;
-    if (xi<0) xi=x+xi-6;
-    else xi=x+xi+6;
-    yi=rand()%10-5;
-    if (yi<0) yi=x+yi-6;
-    else yi=x+yi+6;
+    // set the compas in the [-2,+2] square
+    xi=rand()%4-2;
+    if (xi<0) xi=x+xi-0;
+    else xi=x+xi+0;
+    yi=rand()%4-2;
+    if (yi<0) yi=y+yi-0;
+    else yi=y+yi+0;
 
     items.push_back(new Compass(xi,yi));
 
+    // set the exit in the [-30,+30] square but not in the [-10,+10]
     xi=rand()%40-20;
     if (xi<0) xi=x+xi-10;
     else xi=x+xi+10;
     yi=rand()%40-20;
-    if (yi<0) yi=x+yi-10;
-    else yi=x+yi+10;
+    if (yi<0) yi=y+yi-10;
+    else yi=y+yi+10;
 
     items.push_back(new Exit(x,yi));
 }
@@ -136,12 +132,12 @@ void Maze::generate(int32_t x, int32_t y)
     load_map(x,y);
 }
 
-std::string Maze::display_cell(int32_t x, int32_t y)
+std::string Maze::display_cell(int32_t x, int32_t y, uint32_t status)
 {
     std::string s = SSTR("Pos: "<<x<<","<<y);
 //    s+= SSTR(" Walls: "<<display_walls(maze[x-x0][y-y0]));
     s+= SSTR(" Possible paths: "<<display_paths(maze[x-x0][y-y0]));
     for(auto &i:items)
-        s+=SSTR(i->display_cell(x,y));
+        s+=SSTR(i->display_cell(x,y,status));
     return s;
 }

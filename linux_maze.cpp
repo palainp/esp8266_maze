@@ -7,7 +7,7 @@ Maze m;
 
 void print_to_client(std::string str)
 {
-    std::cout << str << std::endl;
+    if (str!="") std::cout << str << std::endl;
 }
 
 int main(int argc, char *argv[])
@@ -57,7 +57,7 @@ int main(int argc, char *argv[])
     {
         print_to_client(line);
     }
-    print_to_client(m.display_cell(x, y));
+    print_to_client(m.display_cell(x, y, m.status));
 
     while (true)
     {
@@ -102,7 +102,7 @@ int main(int argc, char *argv[])
             print_to_client(i->display_text(x, y, m.status));
         }
 
-        print_to_client(m.display_cell(x, y));
+        print_to_client(m.display_cell(x, y, m.status));
     }
 
     return EXIT_SUCCESS;

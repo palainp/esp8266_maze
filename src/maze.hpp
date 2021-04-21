@@ -9,8 +9,10 @@
 
 #include <vector>
 #include <string>
+#include <memory>
 
 #include "Item.hpp"
+#include "utils.hpp"
 
 #define BUILD_INFO  "v0.2 " __DATE__
 #define DEBUG
@@ -55,18 +57,18 @@ public:
     void set_level(int32_t x, int32_t y);
     void load_map(int32_t x, int32_t y);
     void generate(int32_t x, int32_t y);
-    std::string display_cell(int32_t x, int32_t y);
+    std::string display_cell(int32_t x, int32_t y, uint32_t status);
 
     uint32_t x0,y0; // upper left absolute location
     uint8_t maze[MAP_SIZE][MAP_SIZE];
-    std::vector<Item*> items;
+    std::vector<Item *> items;
     uint32_t status;
 
     // internal rand
     uint32_t seed;
     void set_rng(uint32_t s){seed=s; srand(seed);};
-    void next_rng(){set(seed+1);};
-    void prev_rng(){set(seed-1);};
+    void next_rng(){set_rng(seed+1);};
+    void prev_rng(){set_rng(seed-1);};
     bool coinbias(double x){
 #ifdef __XTENSA__
         yield();

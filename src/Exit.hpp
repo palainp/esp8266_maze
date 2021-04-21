@@ -12,10 +12,21 @@ class Exit:public Item
                 "Vous arrivez presque au but !"
         };
         cell_distance = {0, 8, 18};
+        cell_show_direction = {false, false, false};
     };
 
     void update_status(int32_t x, int32_t y, uint32_t &status) {
-        if(distance(x,y)==0) status &= exit_found;
+        if(distance(x,y)==0) status |= exit_found;
+    };
+
+    std::string display_cell(int32_t x, int32_t y, uint32_t status) {
+        if ((status & got_compass) && !(status & exit_found))
+        {
+            std::string str = " Exit: ";
+            str += SSTR(ix << ","<< iy);
+            return str;
+        }
+        else return "";
     };
 
 };

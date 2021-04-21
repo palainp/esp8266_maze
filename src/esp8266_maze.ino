@@ -15,8 +15,12 @@ Maze m;
 /* ------------------------------------------------- */
 void print_to_client(std::string str)
 {
-  str += "\r\n";
-  player.write(str.c_str(), str.length());
+  if (str!="")
+  {
+    str += "\r\n";
+    player.write(str.c_str(), str.length());
+    Serial.print(str.c_str());
+  }
 }
 
 void check_for_connection()
@@ -53,7 +57,7 @@ void check_for_connection()
           print_to_client(line);
         }
         Serial1.print("New client.");
-        print_to_client(m.display_cell(x, y));
+        print_to_client(m.display_cell(x, y, m.status));
       }
     }
   }
@@ -71,10 +75,6 @@ void deal_with_client()
       while (player.available())
       {
         char c = player.read();
-        while (true)
-        {
-          char c;
-          std::cin >> c;
           if ((c == 'i' || c == '8') && m.is_set(x, y, N))
           { // to North and no wall
             x--;
@@ -114,9 +114,8 @@ void deal_with_client()
             print_to_client(i->display_text(x, y, m.status));
           }
 
-          print_to_client(m.display_cell(x, y));
+          print_to_client(m.display_cell(x, y, m.status));
         }
-      }
     }
   }
 }
