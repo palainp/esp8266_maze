@@ -27,7 +27,8 @@ bool Maze::is_set(int32_t x, int32_t y, t_cell d)
 void Maze::set_level(int32_t x, int32_t y)
 {
     items.clear();
-    
+    status = 0;
+
     int32_t xi, yi;
 
     // set the compas in the [-2,+2] square

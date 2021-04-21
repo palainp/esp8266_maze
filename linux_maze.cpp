@@ -104,7 +104,7 @@ int main(int argc, char *argv[])
 
         print_to_client(m.display_cell(x, y, m.status));
 
-        if (m.status &= exit_found)
+        if (m.status & exit_found)
         {
             m.set_level(x, y);
         }

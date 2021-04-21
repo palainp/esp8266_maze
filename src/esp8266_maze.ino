@@ -46,7 +46,7 @@ void check_for_connection()
           player.stop();
         }
         player = server.available();
-        // TODO : force character mode
+        print_to_client("\377\375\042\377\373\001"); // force char mode
         print_to_client(BUILD_INFO);
         for (std::string line : logo)
         {
@@ -93,6 +93,7 @@ void deal_with_client()
         }
         else if (c == 'q')
         { // to quit
+          player.stop();
           break;
         }
         else
@@ -115,7 +116,7 @@ void deal_with_client()
         }
 
         print_to_client(m.display_cell(x, y, m.status));
-        if (m.status &= exit_found)
+        if (m.status & exit_found)
         {
           m.set_level(x, y);
         }
@@ -133,12 +134,14 @@ void send_from_console()
     if (Serial.available())
     {
       size_t len = Serial.available();
-      uint8_t sbuf[len];
+      uint8_t sbuf[len+2];
       Serial.readBytes(sbuf, len);
+      sbuf[len]='\r';
+      sbuf[len+1]='\n';
       //push UART data to all connected telnet clients
       if (player && player.connected())
       {
-        player.write(sbuf, len);
+        player.write(sbuf, len+2);
         delay(1);
       }
     }
