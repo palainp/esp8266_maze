@@ -20,6 +20,11 @@ class Exit:public Item
     };
 
     std::string display_cell(int32_t x, int32_t y, uint32_t status) {
+#ifdef DEBUG
+        std::string str = " Exit: ";
+        str += SSTR(ix << ","<< iy);
+        return str;
+#else
         if ((status & got_compass) && !(status & exit_found))
         {
             std::string str = " Exit: ";
@@ -27,6 +32,7 @@ class Exit:public Item
             return str;
         }
         else return "";
+#endif
     };
 
 };

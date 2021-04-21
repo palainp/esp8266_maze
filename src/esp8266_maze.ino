@@ -15,7 +15,7 @@ Maze m;
 /* ------------------------------------------------- */
 void print_to_client(std::string str)
 {
-  if (str!="")
+  if (str != "")
   {
     str += "\r\n";
     player.write(str.c_str(), str.length());
@@ -75,47 +75,51 @@ void deal_with_client()
       while (player.available())
       {
         char c = player.read();
-          if ((c == 'i' || c == '8') && m.is_set(x, y, N))
-          { // to North and no wall
-            x--;
-          }
-          else if ((c == 'k' || c == '2') && m.is_set(x, y, S))
-          { // to South and no wall
-            x++;
-          }
-          else if ((c == 'j' || c == '4') && m.is_set(x, y, W))
-          { // to West and no wall
-            y--;
-          }
-          else if ((c == 'l' || c == '6') && m.is_set(x, y, E))
-          { // to East and no wall
-            y++;
-          }
-          else if (c == 'q')
-          { // to quit
-            break;
-          }
-          else
-          {
-            continue;
-          }
-
-          if (!(m.is_in_map(x, y)))
-          {
-            m.load_map(x, y);
-          }
-
-          for (auto &i : m.items)
-          {
-            i->update_status(x, y, m.status);
-          }
-          for (auto &i : m.items)
-          {
-            print_to_client(i->display_text(x, y, m.status));
-          }
-
-          print_to_client(m.display_cell(x, y, m.status));
+        if ((c == 'i' || c == '8') && m.is_set(x, y, N))
+        { // to North and no wall
+          x--;
         }
+        else if ((c == 'k' || c == '2') && m.is_set(x, y, S))
+        { // to South and no wall
+          x++;
+        }
+        else if ((c == 'j' || c == '4') && m.is_set(x, y, W))
+        { // to West and no wall
+          y--;
+        }
+        else if ((c == 'l' || c == '6') && m.is_set(x, y, E))
+        { // to East and no wall
+          y++;
+        }
+        else if (c == 'q')
+        { // to quit
+          break;
+        }
+        else
+        {
+          continue;
+        }
+
+        if (!(m.is_in_map(x, y)))
+        {
+          m.load_map(x, y);
+        }
+
+        for (auto &i : m.items)
+        {
+          i->update_status(x, y, m.status);
+        }
+        for (auto &i : m.items)
+        {
+          print_to_client(i->display_text(x, y, m.status));
+        }
+
+        print_to_client(m.display_cell(x, y, m.status));
+        if (m.status &= exit_found)
+        {
+          m.set_level(x, y);
+        }
+      }
     }
   }
 }

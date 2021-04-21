@@ -20,6 +20,16 @@ class Compass:public Item
         if (distance(x,y)==0) status |= got_compass;
     };
 
+    std::string display_cell(int32_t x, int32_t y, uint32_t status) {
+#ifdef DEBUG
+        std::string str = " Compass: ";
+        str += SSTR(ix << ","<< iy);
+        return str;
+#else
+        return Item::display_cell(x,y,status);
+#endif
+    };
+
     std::string display_text(int32_t x, int32_t y, uint32_t &status) {
         if (!(status & got_compass) || distance(x,y)==0)
             return Item::display_text(x,y,status);

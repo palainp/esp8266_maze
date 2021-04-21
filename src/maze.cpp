@@ -48,7 +48,7 @@ void Maze::set_level(int32_t x, int32_t y)
     if (yi<0) yi=y+yi-10;
     else yi=y+yi+10;
 
-    items.push_back(new Exit(x,yi));
+    items.push_back(new Exit(xi,yi));
 }
 
 void Maze::load_map(int32_t x, int32_t y)

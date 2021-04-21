@@ -15,7 +15,7 @@
 #include "utils.hpp"
 
 #define BUILD_INFO  "v0.2 " __DATE__
-#define DEBUG
+//#define DEBUG
 
 static std::vector<std::string> logo ={
     " ______  __, _ __    _ _ _            ",
