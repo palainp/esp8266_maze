@@ -93,6 +93,7 @@ void deal_with_client()
         }
         else if (c == 'q')
         { // to quit
+          Serial.println("player disconnected");
           player.stop();
           break;
         }
@@ -103,6 +104,7 @@ void deal_with_client()
 
         if (!(m.is_in_map(x, y)))
         {
+          print_to_client("loading map...");
           m.load_map(x, y);
         }
 
