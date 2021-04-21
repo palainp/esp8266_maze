@@ -110,7 +110,7 @@ void Maze::load_map(int32_t x, int32_t y)
             // create new random path to south
             while(s>=0)
             {
-                if(coinbias(0.33) && is_in_map(i,j))
+                if(coinbias(0.05) && is_in_map(i,j))
                 {
                     set_open_(maze[absolute_x_to_map(i)][absolute_y_to_map(j)],S);
                     if (i<x0+MAP_SIZE-1)

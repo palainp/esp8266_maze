@@ -37,7 +37,7 @@ void check_for_connection()
         std::string str = "Sorry, someone is still searching the way...\r\n";
         serverClient.write(str.c_str(), str.length());
         serverClient.stop();
-        Serial1.println("Connection rejected ");
+        Serial.println("Connection rejected ");
       }
       else
       {             // if no player or player disconnected
@@ -56,7 +56,7 @@ void check_for_connection()
         {
           print_to_client(line);
         }
-        Serial1.print("New client.");
+        Serial.print("New client.");
         print_to_client(m.display_cell(x, y, m.status));
       }
     }
@@ -211,6 +211,18 @@ void setup()
   Serial.print("Maze generation...");
   m.generate(x, y);
   Serial.println("done");
+
+#if 0
+  for (auto i=0; i<100; ++i)
+  {
+    for (auto j=0; j<100; ++j)
+    {
+      Serial.printf("%2d ", m.maze[i][j]);
+    }
+    Serial.printf("\n");
+    yield();
+  }
+#endif
 
   Serial.println("starting coos tasks");
   coos.register_clock(clock_func);
