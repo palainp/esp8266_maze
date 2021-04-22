@@ -1,4 +1,4 @@
-// Tools for checking the generated maze :
+// Tool for checking the generated maze :
 // \
 gcc displayer.c -lSDL2 -o display && \
 g++ ../linux_maze.cpp ../src/*.cpp -I../src -o maze && \
