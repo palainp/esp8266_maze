@@ -18,8 +18,11 @@ typedef enum{
 } t_cell;
 #define is_open_(c,d) ((c)&(d))
 
+#define START_X 50
+#define START_Y 50
+
 #define FINAL_X 5
-#define FINAL_Y 12
+#define FINAL_Y 92
 
 #if 0
 // Heuristic Square Euclidean function
@@ -70,15 +73,18 @@ int main(int argc, char ** argv)
     LIST_TYPE* close=NULL;
 
     // we basically suppose that we will always have memory for malloced data
-    enqueue(open, create_node(50,50,0,heuristic(50,50)), &open_size);
-    NODE_TYPE* current = dequeue(open, &open_size);
-    LIST_TYPE* element = create(current->x, current->y, current->gscore);
-    push_front(&close, element);
     SDL_Rect dstrect = { 0, 0, 8, 8};
 
-    // note: open_size+1 as we just dequeue one node
-    while(!(open_size+1 == 0 || (current->x == FINAL_X && current->y == FINAL_Y)))
+    //enqueue(open, create_node(START_X,START_Y,0,heuristic(START_X,START_Y)), &open_size);
+    //NODE_TYPE* current = dequeue(open, &open_size);
+    // this is equivalent to directly create the starting node...
+    NODE_TYPE* current = create_node(START_X,START_Y,0,heuristic(START_X,START_Y));
+
+    do
     {
+        LIST_TYPE* element = create(current->x, current->y, current->gscore);
+        push_front(&close, element);
+
         dstrect.y = current->x*8; // yes... terrible names...
         dstrect.x = current->y*8;
         SDL_RenderCopy(renderer, texture[maze[current->x][current->y]], NULL, &dstrect);
@@ -94,10 +100,9 @@ int main(int argc, char ** argv)
                         current->gscore+1, \
                         current->gscore+heuristic(current->x-1,current->y)), \
                     &open_size);
-                push_front(&close, element);
             }
         }
-        if(is_open_(maze[current->x][current->y], S) && current->x<MAP_SIZE)
+        if(is_open_(maze[current->x][current->y], S) && current->x<MAP_SIZE-1)
         {
             LIST_TYPE* element=create(current->x+1, current->y, current->gscore+1);
             if(!update_if_exists(close, element))
@@ -107,10 +112,9 @@ int main(int argc, char ** argv)
                         current->gscore+1, \
                         current->gscore+heuristic(current->x+1,current->y)), \
                     &open_size);
-                push_front(&close, element);
             }
         }
-        if(is_open_(maze[current->x][current->y], E) && current->y<MAP_SIZE)
+        if(is_open_(maze[current->x][current->y], E) && current->y<MAP_SIZE-1)
         {
             LIST_TYPE* element=create(current->x, current->y+1, current->gscore+1);
             if(!update_if_exists(close, element))
@@ -120,7 +124,6 @@ int main(int argc, char ** argv)
                         current->gscore+1, \
                         current->gscore+heuristic(current->x,current->y+1)), \
                     &open_size);
-                push_front(&close, element);
             }
         }
         if(is_open_(maze[current->x][current->y], W) && current->y>0)
@@ -133,14 +136,13 @@ int main(int argc, char ** argv)
                         current->gscore+1, \
                         current->gscore+heuristic(current->x,current->y-1)), \
                     &open_size);
-                push_front(&close, element);
             }
         }
 
         current = dequeue(open, &open_size);
-    }
+    }while(!(current==NULL || (current->x == FINAL_X && current->y == FINAL_Y)));
 
-    if ((current->x == FINAL_X && current->y == FINAL_Y))
+    if (current!=NULL)
     {
         const Uint32 format = SDL_PIXELFORMAT_ARGB8888;
         SDL_Surface *surface = SDL_CreateRGBSurfaceWithFormat(0, 800, 800, 32, format);
@@ -161,5 +163,5 @@ int main(int argc, char ** argv)
     SDL_DestroyWindow(window);
     SDL_Quit();
 
-    return !(current->x == FINAL_X && current->y == FINAL_Y); // returns 0 if path found
+    return current!=NULL; // returns 0 if path found
 }

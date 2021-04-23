@@ -1,5 +1,5 @@
 // https://algorithmtutor.com/Data-Structures/Tree/Priority-Queues/
-// C implementation of a max priority queue
+// C implementation of a min priority queue
 #include <stdio.h>
 #include <stdlib.h>
 #include "bin_heap.h"
@@ -111,6 +111,8 @@ NODE_TYPE* get_max(NODE_TYPE* a[]) {
 
 // deletes the max item and return
 NODE_TYPE* dequeue(NODE_TYPE* a[], size_t * n) {
+        if (*n==0) return NULL;
+
         NODE_TYPE* max_item = a[0];
         //printf("dequeue %d %d %d %d\n", max_item->x, max_item->y, max_item->gscore, max_item->fscore);
 
