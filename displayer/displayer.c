@@ -44,9 +44,9 @@ int main(int argc, char ** argv)
     }
     SDL_RenderPresent(renderer);
     
-    const Uint32 format = SDL_PxELFORMAT_ARGB8888;
+    const Uint32 format = SDL_PIXELFORMAT_ARGB8888;
     SDL_Surface *surface = SDL_CreateRGBSurfaceWithFormat(0, 800, 800, 32, format);
-    SDL_RenderReadPxels(renderer, NULL, format, surface->pxels, surface->pitch);
+    SDL_RenderReadPxels(renderer, NULL, format, surface->pixels, surface->pitch);
     SDL_SaveBMP(surface, "screenshot.bmp");
     SDL_FreeSurface(surface);
 
