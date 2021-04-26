@@ -17,9 +17,9 @@ Player p;
 #define TX 1
 #define RX 3
 
-const int RED = 5;
-const int GREEN = 4;
-const int BLUE = 0;
+const int RED = TX;
+const int GREEN = GPIO0;
+const int BLUE = GPIO2;
 
 /* ------------------------------------------------- */
 void print_to_client(std::string str)
@@ -124,6 +124,7 @@ void deal_with_client()
           m.load_map(p);
         }
 
+        p.reset_color();
         for (auto &i : m.items)
         {
           i->update_status(p);
@@ -198,13 +199,17 @@ void setup()
   // res = wm.autoConnect("AutoConnectAP"); // anonymous ap
   // res = wm.autoConnect("AutoConnectAP","password"); // password protected ap
 
+  analogWrite(GREEN, 0);
+  analogWrite(BLUE, 0);
   if (!res)
   {
+    analogWrite(RED, 255);
     Serial.println("Failed to connect");
     // ESP.restart();
   }
   else
   {
+    analogWrite(RED, 0);
     //if you get here you have connected to the WiFi
     Serial.println("connected...yeey :)");
   }

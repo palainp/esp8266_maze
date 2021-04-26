@@ -17,6 +17,7 @@ public:
     void clear();
     void teleport(int32_t nx, int32_t ny);
     void move(t_direction d);
+    void reset_color(){led_color=0;};
     uint8_t red_color() {return led_color>>16 & 0xFF;};
     uint8_t green_color() {return led_color>>8 & 0xFF;};
     uint8_t blue_color() {return led_color & 0xFF;};
