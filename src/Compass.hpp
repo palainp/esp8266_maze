@@ -19,6 +19,8 @@ class Compass:public Item
     void update_status(Player &p) {
         if (distance(p)==0) {
             p.status |= got_compass;
+        }
+        if(p.status & got_compass) {
             p.led_color = 0xFFFF00;
         }
     };
