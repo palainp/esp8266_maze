@@ -9,8 +9,17 @@ Coos<6, 0> coos; // number 6 in the angle brackets specifies number of user task
 WiFiServer server(23);
 WiFiClient player;
 
-uint32_t x, y;
 Maze m;
+Player p;
+
+#define GPIO0 0
+#define GPIO2 2
+#define TX 1
+#define RX 3
+
+const int RED = 5;
+const int GREEN = 4;
+const int BLUE = 0;
 
 /* ------------------------------------------------- */
 void print_to_client(std::string str)
@@ -21,6 +30,13 @@ void print_to_client(std::string str)
     player.write(str.c_str(), str.length());
     Serial.print(str.c_str());
   }
+}
+
+void show_color(Player &p)
+{
+  analogWrite(RED, p.red_color());
+  analogWrite(GREEN, p.green_color());
+  analogWrite(BLUE, p.blue_color());
 }
 
 void check_for_connection()
@@ -57,7 +73,7 @@ void check_for_connection()
           print_to_client(line);
         }
         Serial.print("New client.");
-        print_to_client(m.display_cell(x, y, m.status));
+        print_to_client(m.display_cell(p));
       }
     }
   }
@@ -75,21 +91,21 @@ void deal_with_client()
       while (player.available())
       {
         char c = player.read();
-        if ((c == 'i' || c == '8') && m.is_set(x, y, N))
+        if ((c == 'i' || c == '8') && m.is_set(p.x, p.y, N))
         { // to North and no wall
-          x--;
+          p.move(N);
         }
-        else if ((c == 'k' || c == '2') && m.is_set(x, y, S))
+        else if ((c == 'k' || c == '2') && m.is_set(p.x, p.y, S))
         { // to South and no wall
-          x++;
+          p.move(S);
         }
-        else if ((c == 'j' || c == '4') && m.is_set(x, y, W))
+        else if ((c == 'j' || c == '4') && m.is_set(p.x, p.y, W))
         { // to West and no wall
-          y--;
+          p.move(W);
         }
-        else if ((c == 'l' || c == '6') && m.is_set(x, y, E))
+        else if ((c == 'l' || c == '6') && m.is_set(p.x, p.y, E))
         { // to East and no wall
-          y++;
+          p.move(E);
         }
         else if (c == 'q')
         { // to quit
@@ -102,26 +118,28 @@ void deal_with_client()
           continue;
         }
 
-        if (!(m.is_in_map(x, y)))
+        if (!(m.is_in_map(p)))
         {
           print_to_client("loading map...");
-          m.load_map(x, y);
+          m.load_map(p);
         }
 
         for (auto &i : m.items)
         {
-          i->update_status(x, y, m.status);
+          i->update_status(p);
         }
+        show_color(p);
+
         for (auto &i : m.items)
         {
-          print_to_client(i->display_text(x, y, m.status));
+          print_to_client(i->display_text(p));
         }
 
-        print_to_client(m.display_cell(x, y, m.status));
-        if (m.status & exit_found)
+        print_to_client(m.display_cell(p));
+        /*if (m.status & exit_found)
         {
-          m.set_level(x, y);
-        }
+          m.set_level(p);
+        }*/
       }
     }
   }
@@ -206,11 +224,14 @@ void setup()
   server.setNoDelay(true);
 
   srand(0);
-  x = rand() % 5000 + 1000;
-  y = rand() % 5000 + 1000;
+  p.teleport(rand() % 5000 + 1000, rand() % 5000 + 1000);
   Serial.print("Maze generation...");
-  m.generate(x, y);
+  m.generate(p);
   Serial.println("done");
+
+  pinMode(RED, OUTPUT);
+  pinMode(GREEN, OUTPUT);
+  pinMode(BLUE, OUTPUT);
 
 #if 0
   for (auto i=0; i<100; ++i)

@@ -9,26 +9,26 @@ class Exit:public Item
         cell_text = {
                 "You just found the exit.... or this is just the starting point for another run ??",
                 "The exit is really near.",
-                "Vous arrivez presque au but !"
+                "You almost reach the goal!"
         };
         cell_distance = {0, 8, 18};
         cell_show_direction = {false, false, false};
     };
 
-    void update_status(int32_t x, int32_t y, uint32_t &status) {
-        if(distance(x,y)==0) status |= exit_found;
+    void update_status(Player &p) {
+        if(distance(p)==0) p.status |= exit_found;
     };
 
-    std::string display_cell(int32_t x, int32_t y, uint32_t status) {
+    std::string display_cell(Player &p) {
 #ifdef DEBUG
         std::string str = " Exit: ";
-        str += SSTR(ix << ","<< iy);
+        str += SSTR(x << ","<< y);
         return str;
 #else
-        if ((status & got_compass) && !(status & exit_found))
+        if ((p.status & got_compass) && !(p.status & exit_found))
         {
             std::string str = " Exit: ";
-            str += SSTR(ix << ","<< iy);
+            str += SSTR(x << ","<< y);
             return str;
         }
         else return "";

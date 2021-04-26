@@ -8,31 +8,34 @@ class Compass:public Item
     Compass(int32_t x, int32_t y):Item(x,y){
         cell_text = {
             "You just found the compass !",
-            "Vous voyez un reflet dans la direction ",
-            "Un léger bruit venait de la direction ",
-            "Vous entendez quelque chose de métalique tomber au sol pas très loin."
+            "You can see something shinning in the direction ",
+            "A small noise came from the direction ",
+            "You can hear a metallic object fall to the ground near here."
         };
         cell_distance = {0, 3, 8, 18};
         cell_show_direction = {false, true, true, false};
     };
 
-    void update_status(int32_t x, int32_t y, uint32_t &status) {
-        if (distance(x,y)==0) status |= got_compass;
+    void update_status(Player &p) {
+        if (distance(p)==0) {
+            p.status |= got_compass;
+            p.led_color = 0xFFFF00;
+        }
     };
 
-    std::string display_cell(int32_t x, int32_t y, uint32_t status) {
+    std::string display_cell(Player &p) {
 #ifdef DEBUG
         std::string str = " Compass: ";
-        str += SSTR(ix << ","<< iy);
+        str += SSTR(x << ","<< y);
         return str;
 #else
-        return Item::display_cell(x,y,status);
+        return Item::display_cell(p);
 #endif
     };
 
-    std::string display_text(int32_t x, int32_t y, uint32_t &status) {
-        if (!(status & got_compass) || distance(x,y)==0)
-            return Item::display_text(x,y,status);
+    std::string display_text(Player &p) {
+        if (!(p.status & got_compass) || distance(p)==0)
+            return Item::display_text(p);
         else return "";
     };
 

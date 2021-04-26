@@ -1,6 +1,7 @@
 #include "maze.hpp"
 #include "Compass.hpp"
 #include "Exit.hpp"
+#include "Helper.hpp"
 
 #define display_walls(c) (is_open_((c),N)?' ':'N')<<(is_open_((c),S)?' ':'S')<<\
                          (is_open_((c),E)?' ':'E')<<(is_open_((c),W)?' ':'W')
@@ -14,48 +15,49 @@
 #define absolute_x_to_map(x) (x)-x0
 #define absolute_y_to_map(y) (y)-y0
 
-bool Maze::is_in_map(int32_t x, int32_t y)
+bool Maze::is_in_map(Player &p)
 {
-    return x>=x0 && y>=y0 && x<x0+MAP_SIZE && y<y0+MAP_SIZE;
+    return is_loaded(p.x, p.y);
 }
 
-bool Maze::is_set(int32_t x, int32_t y, t_cell d)
+bool Maze::is_set(int32_t x, int32_t y, t_direction d)
 {
     return maze[x-x0][y-y0]&d;
 }
 
-void Maze::set_level(int32_t x, int32_t y)
-{
-    items.clear();
-    status = 0;
-
-    int32_t xi, yi;
-
-    // set the compas in the [-2,+2] square
-    xi=rand()%4-2;
-    if (xi<0) xi=x+xi-0;
-    else xi=x+xi+0;
-    yi=rand()%4-2;
-    if (yi<0) yi=y+yi-0;
-    else yi=y+yi+0;
-
-    items.push_back(new Compass(xi,yi));
-
-    // set the exit in the [-30,+30] square but not in the [-10,+10]
-    xi=rand()%40-20;
-    if (xi<0) xi=x+xi-10;
-    else xi=x+xi+10;
-    yi=rand()%40-20;
-    if (yi<0) yi=y+yi-10;
-    else yi=y+yi+10;
-
-    items.push_back(new Exit(xi,yi));
+bool Maze::is_loaded(int32_t x,int32_t y) {
+    return x>=x0 && y>=y0 && x<x0+MAP_SIZE && y<y0+MAP_SIZE;
 }
 
-void Maze::load_map(int32_t x, int32_t y)
+// returns a value in [-A,+A] but not in the [-B,+B]
+int32_t random_in_but_not_in(int32_t A,int32_t B) {
+    int32_t d=A-B;
+    int32_t r = rand()%(2*d)-d;
+    if(r<0) return r-B;
+    else return r+B;
+}
+
+void Maze::set_level(Player &p)
 {
-    x0 = x-MAP_SIZE/2;
-    y0 = y-MAP_SIZE/2;
+    items.clear();
+    p.clear();
+
+    // set the compas in the [-20,+20] square but not in the [-10,+10]
+    Compass *c = new Compass(p.x+random_in_but_not_in(20,10),p.y+random_in_but_not_in(20,10));
+    items.push_back(c);
+
+    // set the exit in the [-60,+60] square but not in the [-30,+30]
+    items.push_back(new Exit(p.x+random_in_but_not_in(60,30),p.y+random_in_but_not_in(60,30)));
+
+    // set a liar helper and a another that tells the truth to help in the [-10,+10] square but not in the [-5,+5]
+    items.push_back(new Helper(p.x+random_in_but_not_in(10,5),p.y+random_in_but_not_in(10,5), true, c));
+    items.push_back(new Helper(p.x+random_in_but_not_in(10,5),p.y+random_in_but_not_in(10,5), false, c));
+}
+
+void Maze::load_map(Player &p)
+{
+    x0 = p.x-MAP_SIZE/2;
+    y0 = p.y-MAP_SIZE/2;
 
     // set all walls closed by default
     for (auto i=0; i<MAP_SIZE; ++i)
@@ -81,14 +83,14 @@ void Maze::load_map(int32_t x, int32_t y)
             int32_t s=0;
             while(coinbias(0.67))
             {
-                if(is_in_map(i,j+s))
+                if(is_loaded(i,j+s))
                 {
                     set_open_(maze[absolute_x_to_map(i)][absolute_y_to_map(j+s)],E);
                     if (j+s<y0+MAP_SIZE-1)
                     {
                         set_open_(maze[absolute_x_to_map(i)][absolute_y_to_map(j+s+1)],W);
                     }
-                } else if(j+s==y0-1 && is_in_map(i,j+s+1))
+                } else if(j+s==y0-1 && is_loaded(i,j+s+1))
                 {
                     set_open_(maze[absolute_x_to_map(i)][0],N); 
                 }
@@ -96,21 +98,21 @@ void Maze::load_map(int32_t x, int32_t y)
             }
             // ensure we have at least one path to south
             int32_t to_south = (s==0)?0:rand()%s;
-            if(is_in_map(i,j+to_south))
+            if(is_loaded(i,j+to_south))
             {
                 set_open_(maze[absolute_x_to_map(i)][absolute_y_to_map(j+to_south)],S);
                 if (i<x0+MAP_SIZE-1)
                 {
                     set_open_(maze[absolute_x_to_map(i+1)][absolute_y_to_map(j+to_south)],N);
                 }
-            } else if(i==x0-1 && is_in_map(i+1,j+to_south))
+            } else if(i==x0-1 && is_loaded(i+1,j+to_south))
             {
                set_open_(maze[0][absolute_y_to_map(j+to_south)],N); 
             }
             // create new random path to south
             while(s>=0)
             {
-                if(coinbias(0.05) && is_in_map(i,j))
+                if(coinbias(0.05) && is_loaded(i,j))
                 {
                     set_open_(maze[absolute_x_to_map(i)][absolute_y_to_map(j)],S);
                     if (i<x0+MAP_SIZE-1)
@@ -127,18 +129,18 @@ void Maze::load_map(int32_t x, int32_t y)
     }
 }
 
-void Maze::generate(int32_t x, int32_t y)
+void Maze::generate(Player &p)
 {
-    set_level(x,y);
-    load_map(x,y);
+    set_level(p);
+    load_map(p);
 }
 
-std::string Maze::display_cell(int32_t x, int32_t y, uint32_t status)
+std::string Maze::display_cell(Player &p)
 {
-    std::string s = SSTR("Pos: "<<x<<","<<y);
+    std::string s = SSTR("Pos: "<<p.x<<","<<p.y);
 //    s+= SSTR(" Walls: "<<display_walls(maze[x-x0][y-y0]));
-    s+= SSTR(" Possible paths: "<<display_paths(maze[x-x0][y-y0]));
+    s+= SSTR(" Possible paths: "<<display_paths(maze[p.x-x0][p.y-y0]));
     for(auto &i:items)
-        s+=SSTR(i->display_cell(x,y,status));
+        s+=SSTR(i->display_cell(p));
     return s;
 }

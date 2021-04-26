@@ -2,12 +2,17 @@
 #include <iostream>
 #include "maze.hpp"
 
-uint32_t x, y;
 Maze m;
+Player p;
 
 void print_to_client(std::string str)
 {
     if (str!="") std::cout << str << std::endl;
+}
+
+void show_color(Player &p)
+{
+  printf("0x%02x%02x%02x\n", p.red_color(), p.green_color(), p.blue_color());
 }
 
 int main(int argc, char *argv[])
@@ -22,11 +27,11 @@ int main(int argc, char *argv[])
         std::cout << BUILD_INFO << std::endl;
 
     srand(0);
-    x = rand() % 5000 + 1000;
-    y = rand() % 5000 + 1000;
+    p.teleport(rand() % 5000 + 1000, rand() % 5000 + 1000);
+
     if (!print_maze)
         std::cout << "Maze generation..." << std::endl;
-    m.generate(x, y);
+    m.generate(p);
     if (!print_maze)
         std::cout << "done" << std::endl;
 
@@ -57,27 +62,27 @@ int main(int argc, char *argv[])
     {
         print_to_client(line);
     }
-    print_to_client(m.display_cell(x, y, m.status));
+    print_to_client(m.display_cell(p));
 
     while (true)
     {
         char c;
         std::cin >> c;
-        if ((c == 'i' || c == '8') && m.is_set(x, y, N))
+        if ((c == 'i' || c == '8') && m.is_set(p.x, p.y, N))
         { // to North and no wall
-            x--;
+            p.move(N);
         }
-        else if ((c == 'k' || c == '2') && m.is_set(x, y, S))
+        else if ((c == 'k' || c == '2') && m.is_set(p.x, p.y, S))
         { // to South and no wall
-            x++;
+            p.move(S);
         }
-        else if ((c == 'j' || c == '4') && m.is_set(x, y, W))
+        else if ((c == 'j' || c == '4') && m.is_set(p.x, p.y, W))
         { // to West and no wall
-            y--;
+            p.move(W);
         }
-        else if ((c == 'l' || c == '6') && m.is_set(x, y, E))
+        else if ((c == 'l' || c == '6') && m.is_set(p.x, p.y, E))
         { // to East and no wall
-            y++;
+            p.move(E);
         }
         else if (c == 'q')
         { // to quit
@@ -88,26 +93,28 @@ int main(int argc, char *argv[])
             continue;
         }
 
-        if (!(m.is_in_map(x, y)))
+        if (!(m.is_in_map(p)))
         {
-            m.load_map(x, y);
+            m.load_map(p);
         }
 
         for (auto &i : m.items)
         {
-            i->update_status(x, y, m.status);
+            i->update_status(p);
         }
+        show_color(p);
+
         for (auto &i : m.items)
         {
-            print_to_client(i->display_text(x, y, m.status));
+            print_to_client(i->display_text(p));
         }
 
-        print_to_client(m.display_cell(x, y, m.status));
+        print_to_client(m.display_cell(p));
 
-        if (m.status & exit_found)
+        /*if (m.status & exit_found)
         {
-            m.set_level(x, y);
-        }
+            m.set_level(p);
+        }*/
     }
 
     return EXIT_SUCCESS;
