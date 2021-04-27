@@ -6,11 +6,6 @@ class Teleport:public Item
 {
     public:
     Teleport(int32_t x, int32_t y):Item(x,y){
-        cell_text = {
-            "ohoh you found something...",
-        };
-        cell_distance = {0}; // we have to hear the helper very far to really help the player
-        cell_show_direction = {false};
         cx = x+rand()%20-10;
         cy = y+rand()%20-10;
     };
