@@ -35,6 +35,7 @@ class Item
         return "";
     };
 
+    virtual void move(uint8_t cell) {};
     virtual void update_status(Player &p) {};
     
     virtual std::string display_text(Player &p) {

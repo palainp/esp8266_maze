@@ -68,19 +68,19 @@ int main(int argc, char *argv[])
     {
         char c;
         std::cin >> c;
-        if ((c == 'i' || c == '8') && m.is_set(p.x, p.y, N))
+        if ((c == 'i' || c == '8') && m.is_set(m.cell(p.x, p.y), N))
         { // to North and no wall
             p.move(N);
         }
-        else if ((c == 'k' || c == '2') && m.is_set(p.x, p.y, S))
+        else if ((c == 'k' || c == '2') && m.is_set(m.cell(p.x, p.y), S))
         { // to South and no wall
             p.move(S);
         }
-        else if ((c == 'j' || c == '4') && m.is_set(p.x, p.y, W))
+        else if ((c == 'j' || c == '4') && m.is_set(m.cell(p.x, p.y), W))
         { // to West and no wall
             p.move(W);
         }
-        else if ((c == 'l' || c == '6') && m.is_set(p.x, p.y, E))
+        else if ((c == 'l' || c == '6') && m.is_set(m.cell(p.x, p.y), E))
         { // to East and no wall
             p.move(E);
         }
@@ -98,6 +98,7 @@ int main(int argc, char *argv[])
             m.load_map(p);
         }
 
+        p.reset_color();
         for (auto &i : m.items)
         {
             i->update_status(p);

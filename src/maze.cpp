@@ -2,6 +2,7 @@
 #include "Compass.hpp"
 #include "Exit.hpp"
 #include "Helper.hpp"
+#include "Teleport.hpp"
 
 #define display_walls(c) (is_open_((c),N)?' ':'N')<<(is_open_((c),S)?' ':'S')<<\
                          (is_open_((c),E)?' ':'E')<<(is_open_((c),W)?' ':'W')
@@ -20,9 +21,16 @@ bool Maze::is_in_map(Player &p)
     return is_loaded(p.x, p.y);
 }
 
-bool Maze::is_set(int32_t x, int32_t y, t_direction d)
+bool Maze::is_set(uint8_t cell, t_direction d)
 {
-    return maze[x-x0][y-y0]&d;
+    return cell&d;
+}
+
+uint8_t Maze::cell(int32_t x, int32_t y)
+{
+    if(is_loaded(x,y))
+        return maze[x-x0][y-y0];
+    else return 0;
 }
 
 bool Maze::is_loaded(int32_t x,int32_t y) {
@@ -52,6 +60,11 @@ void Maze::set_level(Player &p)
     // set a liar helper and a another that tells the truth to help in the [-10,+10] square but not in the [-5,+5]
     items.push_back(new Helper(p.x+random_in_but_not_in(10,5),p.y+random_in_but_not_in(10,5), true, c));
     items.push_back(new Helper(p.x+random_in_but_not_in(10,5),p.y+random_in_but_not_in(10,5), false, c));
+
+    for (auto i=0; i<10; ++i)
+    {
+        items.push_back(new Teleport(p.x+random_in_but_not_in(20,3),p.y+random_in_but_not_in(20,3)));
+    }
 }
 
 void Maze::load_map(Player &p)

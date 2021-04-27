@@ -9,7 +9,7 @@ class Helper:public Item
     Helper(int32_t x, int32_t y, bool is_liar, Compass *c):lie(is_liar),Item(x,y){
         cell_text = {
             "You found someone !",
-            "You can hear someone speeking in the direction ",
+            "You can hear someone speaking in the direction ",
             "The legend says that someone lives in the ",
         };
         cell_distance = {0, 4*4*2, 7*7*2}; // we have to hear the helper very far to really help the player
@@ -21,6 +21,26 @@ class Helper:public Item
         } else {
             cx = c->x;
             cy = c->y;
+        }
+    };
+
+    void move(uint8_t cell) {
+        // roughly 50% percent of moving, and 12.5% in each direction (if open)
+        switch(rand()%8){
+            case 0: //N
+                if(cell&N) --x;
+                break;
+            case 1: //S
+                if(cell&S) ++x;
+                break;
+            case 2: //E
+                if(cell&E) ++y;
+                break;
+            case 3: //W
+                if(cell&W) --y;
+                break;
+            default: // not moving
+                break;
         }
     };
 

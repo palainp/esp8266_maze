@@ -45,7 +45,8 @@ public:
     Maze(){};
     ~Maze(){};
     bool is_in_map(Player &p);
-    bool is_set(int32_t x, int32_t y, t_direction d);
+    bool is_set(uint8_t cell, t_direction d);
+    uint8_t cell(int32_t x, int32_t y);
     void set_level(Player &p);
     void load_map(Player &p);
     void generate(Player &p);

@@ -4,6 +4,9 @@
 #include "coos.h"
 #include "maze.hpp"
 
+// do not define USE_SERIAL with ESP8266/01 as we must use RX for the 3color led
+//#define USE_SERIAL
+
 Coos<6, 0> coos; // number 6 in the angle brackets specifies number of user tasks; 0 selects 1 ms tick
 
 WiFiServer server(23);
@@ -12,6 +15,7 @@ WiFiClient player;
 Maze m;
 Player p;
 
+// ESP8266/01s pinout
 #define GPIO0 0
 #define GPIO2 2
 #define TX 1
@@ -28,17 +32,29 @@ void print_to_client(std::string str)
   {
     str += "\r\n";
     player.write(str.c_str(), str.length());
+#ifdef USE_SERIAL
     Serial.print(str.c_str());
+#endif
   }
 }
 
-void show_color(Player &p)
+// ========================================
+// Update the 3color led according to the player led status
+// ========================================
+void led_color()
 {
-  analogWrite(RED, p.red_color());
-  analogWrite(GREEN, p.green_color());
-  analogWrite(BLUE, p.blue_color());
+  while (true)
+  {
+    COOS_DELAY(100);
+    analogWrite(RED, p.red_color());
+    analogWrite(GREEN, p.green_color());
+    analogWrite(BLUE, p.blue_color());
+  }
 }
 
+// ========================================
+// Wait for incomming connexions
+// ========================================
 void check_for_connection()
 {
   while (true)
@@ -53,7 +69,9 @@ void check_for_connection()
         std::string str = "Sorry, someone is still searching the way...\r\n";
         serverClient.write(str.c_str(), str.length());
         serverClient.stop();
+#ifdef USE_SERIAL
         Serial.println("Connection rejected ");
+#endif
       }
       else
       {             // if no player or player disconnected
@@ -72,13 +90,18 @@ void check_for_connection()
         {
           print_to_client(line);
         }
+#ifdef USE_SERIAL
         Serial.print("New client.");
+#endif
         print_to_client(m.display_cell(p));
       }
     }
   }
 }
 
+// ========================================
+// Get player's moves to update the screen
+// ========================================
 void deal_with_client()
 {
   //check clients for data
@@ -91,25 +114,27 @@ void deal_with_client()
       while (player.available())
       {
         char c = player.read();
-        if ((c == 'i' || c == '8') && m.is_set(p.x, p.y, N))
+        if ((c == 'i' || c == '8') && m.is_set(m.cell(p.x, p.y), N))
         { // to North and no wall
           p.move(N);
         }
-        else if ((c == 'k' || c == '2') && m.is_set(p.x, p.y, S))
+        else if ((c == 'k' || c == '2') && m.is_set(m.cell(p.x, p.y), S))
         { // to South and no wall
           p.move(S);
         }
-        else if ((c == 'j' || c == '4') && m.is_set(p.x, p.y, W))
+        else if ((c == 'j' || c == '4') && m.is_set(m.cell(p.x, p.y), W))
         { // to West and no wall
           p.move(W);
         }
-        else if ((c == 'l' || c == '6') && m.is_set(p.x, p.y, E))
+        else if ((c == 'l' || c == '6') && m.is_set(m.cell(p.x, p.y), E))
         { // to East and no wall
           p.move(E);
         }
         else if (c == 'q')
         { // to quit
+#ifdef USE_SERIAL
           Serial.println("player disconnected");
+#endif
           player.stop();
           break;
         }
@@ -127,9 +152,9 @@ void deal_with_client()
         p.reset_color();
         for (auto &i : m.items)
         {
+          i->move(m.cell(i->x,i->y));
           i->update_status(p);
         }
-        show_color(p);
 
         for (auto &i : m.items)
         {
@@ -146,6 +171,9 @@ void deal_with_client()
   }
 }
 
+// ========================================
+// Sends input from console to the player screen
+// ========================================
 void send_from_console()
 {
   //check UART for data
@@ -182,9 +210,15 @@ void clock_func(void)
 /* ------------------------------------------------- */
 void setup()
 {
+  pinMode(RED, OUTPUT);
+  pinMode(GREEN, OUTPUT);
+  pinMode(BLUE, OUTPUT);
+
   WiFi.mode(WIFI_STA); // explicitly set mode, esp defaults to STA+AP
+#ifdef USE_SERIAL
   Serial.begin(115200);
   delay(10);
+#endif
 
   //WiFiManager, Local intialization. Once its business is done, there is no need to keep it around
   WiFiManager wm;
@@ -199,44 +233,55 @@ void setup()
   // res = wm.autoConnect("AutoConnectAP"); // anonymous ap
   // res = wm.autoConnect("AutoConnectAP","password"); // password protected ap
 
+  analogWrite(RED, 0);
   analogWrite(GREEN, 0);
   analogWrite(BLUE, 0);
+
+  // led is red = AP, blue = STA
   if (!res)
   {
     analogWrite(RED, 255);
+#ifdef USE_SERIAL
     Serial.println("Failed to connect");
+#endif
     // ESP.restart();
   }
   else
   {
-    analogWrite(RED, 0);
     //if you get here you have connected to the WiFi
+    analogWrite(BLUE, 255);
+#ifdef USE_SERIAL
     Serial.println("connected...yeey :)");
+#endif
   }
 
   while (WiFi.status() != WL_CONNECTED)
   {
     delay(500);
+#ifdef USE_SERIAL
     Serial.print(".");
+#endif
   }
 
+#ifdef USE_SERIAL
   Serial.println("");
   Serial.println("WiFi connected");
   Serial.println("IP address: ");
   Serial.println(WiFi.localIP());
+#endif
 
   server.begin();
   server.setNoDelay(true);
 
   srand(0);
   p.teleport(rand() % 5000 + 1000, rand() % 5000 + 1000);
+#ifdef USE_SERIAL
   Serial.print("Maze generation...");
+#endif
   m.generate(p);
+#ifdef USE_SERIAL
   Serial.println("done");
-
-  pinMode(RED, OUTPUT);
-  pinMode(GREEN, OUTPUT);
-  pinMode(BLUE, OUTPUT);
+#endif
 
 #if 0
   for (auto i=0; i<100; ++i)
@@ -250,11 +295,14 @@ void setup()
   }
 #endif
 
+#ifdef USE_SERIAL
   Serial.println("starting coos tasks");
   coos.register_clock(clock_func);
+  coos.register_task(send_from_console); // register tasks
+#endif
   coos.register_task(check_for_connection); // register tasks
   coos.register_task(deal_with_client);
-  coos.register_task(send_from_console);
+  coos.register_task(led_color);
   coos.start(); // init registered tasks
 }
 
