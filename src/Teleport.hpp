@@ -6,14 +6,17 @@ class Teleport:public Item
 {
     public:
     Teleport(int32_t x, int32_t y):Item(x,y){
-        cx = x+rand()%20-10;
-        cy = y+rand()%20-10;
+        cell_text = {
+            "Something buuzzzz in the ",
+        };
+        cell_distance = {4};
+        cell_show_direction = {true};
     };
 
     std::string display_text(Player &p) {
         std::string str = "";
         if (distance(p)==0) {
-            str += SSTR("                          .-'''-.        .-'''-.             \r\n");
+            str += SSTR("                   .-'''-.        .-'''-.                    \r\n");
             str += SSTR("                 '   _    \\     '   _    \\                   \r\n");
             str += SSTR("               /   /` '.   \\  /   /` '.   \\      .           \r\n");
             str += SSTR("       _     _.   |     \\  ' .   |     \\  '    .'|           \r\n");
@@ -26,7 +29,10 @@ class Teleport:public Item
             str += SSTR("                                    .'.'.-'  / | |     | |   \r\n");
             str += SSTR("                                    .'   \\_.'  | '.    | '.  \r\n");
             str += SSTR("                                               '---'   '---' \r\n");
-            p.teleport(cx,cy);
+            // we must have random teleport as unfortunatly one can be on the only way to the exit...
+            p.teleport(x+rand()%20-10,y+rand()%20-10);
+        } else {
+            return Item::display_text(p);
         }
         return str;
     };
@@ -41,9 +47,6 @@ class Teleport:public Item
         return "";
 #endif
     };
-
-    private:
-        int32_t cx,cy;
 };
 
 #endif

@@ -54,16 +54,16 @@ void Maze::set_level(Player &p)
     Compass *c = new Compass(p.x+random_in_but_not_in(20,10),p.y+random_in_but_not_in(20,10));
     items.push_back(c);
 
-    // set the exit in the [-60,+60] square but not in the [-30,+30]
-    items.push_back(new Exit(p.x+random_in_but_not_in(60,30),p.y+random_in_but_not_in(60,30)));
+    // set the exit in the [-49,+49] square but not in the [-30,+30]
+    items.push_back(new Exit(p.x+random_in_but_not_in(49,30),p.y+random_in_but_not_in(49,30)));
 
     // set a liar helper and a another that tells the truth to help in the [-10,+10] square but not in the [-5,+5]
     items.push_back(new Helper(p.x+random_in_but_not_in(10,5),p.y+random_in_but_not_in(10,5), true, c));
     items.push_back(new Helper(p.x+random_in_but_not_in(10,5),p.y+random_in_but_not_in(10,5), false, c));
 
-    for (auto i=0; i<10; ++i)
+    for (auto i=0; i<16; ++i)
     {
-        items.push_back(new Teleport(p.x+random_in_but_not_in(20,3),p.y+random_in_but_not_in(20,3)));
+        items.push_back(new Teleport(p.x+random_in_but_not_in(20,4),p.y+random_in_but_not_in(20,4)));
     }
 }
 

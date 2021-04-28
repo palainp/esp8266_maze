@@ -54,6 +54,19 @@ class Helper:public Item
             }
         }
     };
+    std::string display_text(Player &p) {
+        std::string str = "";
+        if (distance(p)==0)
+        {
+            str += SSTR("A long time ago I found something that woosh me ");
+            if (lie) {
+              str += SSTR("at least 100 cells away ! They are really really rare but if you found one you must avoid it...");
+            } else {
+              str += SSTR("at most 10 cells away ! I certainly know that there is 16 of them in the 20x20 square around the starting point...");
+            }
+        }
+        return str;
+    };
 
     std::string display_cell(Player &p) {
 #ifdef DEBUG
