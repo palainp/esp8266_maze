@@ -38,7 +38,7 @@ bool Maze::is_loaded(int32_t x,int32_t y) {
 }
 
 // returns a value in [-A,+A] but not in the [-B,+B]
-int32_t random_in_but_not_in(int32_t A,int32_t B) {
+int32_t random_in_but_not_in(int32_t A, int32_t B) {
     int32_t d=A-B;
     int32_t r = rand()%(2*d)-d;
     if(r<0) return r-B;
@@ -54,8 +54,8 @@ void Maze::set_level(Player &p)
     Compass *c = new Compass(p.x+random_in_but_not_in(20,10),p.y+random_in_but_not_in(20,10));
     items.push_back(c);
 
-    // set the exit in the [-49,+49] square but not in the [-30,+30]
-    items.push_back(new Exit(p.x+random_in_but_not_in(49,30),p.y+random_in_but_not_in(49,30)));
+    // set the exit in the [-60,+60] square but not in the [-30,+30] : this may produce a map reload with the default map size[+50,-50]
+    items.push_back(new Exit(p.x+random_in_but_not_in(60,30),p.y+random_in_but_not_in(60,30)));
 
     // set a liar helper and a another that tells the truth to help in the [-10,+10] square but not in the [-5,+5]
     items.push_back(new Helper(p.x+random_in_but_not_in(10,5),p.y+random_in_but_not_in(10,5), true, c));
@@ -82,8 +82,12 @@ void Maze::load_map(Player &p)
     }
 
     // sidewinder algorithm + multiple south path as in Eller's algorithm
+    // WARNING: to keep consistent maze even after a map reloading, we must
+    // be sure to have always the same number of rand() calls.
+    // any change here can modify the whole maze...
+    // TODO: what can happen if a player go into the negative part of the maze ??
 
-    // construct maze, the [0][0] cell is [x-MAP_SIZE/2][y-MAP_SIZE/2]
+    // construct maze, the [0][0] map cell is [x-MAP_SIZE/2=x0][y-MAP_SIZE/2=y0] in the giant maze
     // set rng to the row above the first in maze[][]
     int32_t i=x0-1;
     set_rng(i);
@@ -103,9 +107,9 @@ void Maze::load_map(Player &p)
                     {
                         set_open_(maze[absolute_x_to_map(i)][absolute_y_to_map(j+s+1)],W);
                     }
-                } else if(j+s==y0-1 && is_loaded(i,j+s+1))
+                } else if(j+s==y0-1 && is_loaded(i,j+s+1)) // if map is connected from the west
                 {
-                    set_open_(maze[absolute_x_to_map(i)][0],N); 
+                    set_open_(maze[absolute_x_to_map(i)][0],W);
                 }
                 ++s;
             }
@@ -118,9 +122,9 @@ void Maze::load_map(Player &p)
                 {
                     set_open_(maze[absolute_x_to_map(i+1)][absolute_y_to_map(j+to_south)],N);
                 }
-            } else if(i==x0-1 && is_loaded(i+1,j+to_south))
+            } else if(i==x0-1 && is_loaded(i+1,j+to_south)) // if map is connected from the north
             {
-               set_open_(maze[0][absolute_y_to_map(j+to_south)],N); 
+               set_open_(maze[0][absolute_y_to_map(j+to_south)],N);
             }
             // create new random path to south
             while(s>=0)

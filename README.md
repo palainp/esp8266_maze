@@ -40,7 +40,7 @@ You also can quickly compile and test with linux using the command: ```cd esp826
 
 If you want to see the part of maze loaded into memory you can use (you will have to install libSDL2 first): ```cd esp8266_maze/displayer && gcc displayer.c -lSDL2 -o display && g++ ../linux_maze.cpp ../src/*.cpp -I../src -o maze && ./maze out | ./display```
 
-This will create a screenshot.bmp inside esp8266_maze/displayer as ![screenshot](https://user-images.githubusercontent.com/65669679/115605475-d84a7900-a2e2-11eb-811f-e12ee4cb8b36.png)
+This will create a screenshot.bmp inside esp8266_maze/displayer as the one in the esp8266_maze/displayer folder.
 
 If you want to check a path search algorithm, A* can be run with (you will have to install libSDL2 first): ```cd esp8266_maze/displayer && gcc resolver.c list.c bin_heap.c -lSDL2 -o resolve && g++ ../linux_maze.cpp ../src/*.cpp -I../src -o maze && ./maze out | ./resolve```
 
