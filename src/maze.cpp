@@ -3,6 +3,7 @@
 #include "Exit.hpp"
 #include "Helper.hpp"
 #include "Teleport.hpp"
+#include "Ghost.hpp"
 
 #define display_walls(c) (is_open_((c),N)?' ':'N')<<(is_open_((c),S)?' ':'S')<<\
                          (is_open_((c),E)?' ':'E')<<(is_open_((c),W)?' ':'W')
@@ -61,9 +62,13 @@ void Maze::set_level(Player &p)
     items.push_back(new Helper(p.x+random_in_but_not_in(10,5),p.y+random_in_but_not_in(10,5), true, c));
     items.push_back(new Helper(p.x+random_in_but_not_in(10,5),p.y+random_in_but_not_in(10,5), false, c));
 
-    for (auto i=0; i<16; ++i)
+    for (auto i=0; i<10; ++i)
     {
         items.push_back(new Teleport(p.x+random_in_but_not_in(20,4),p.y+random_in_but_not_in(20,4)));
+    }
+    for (auto i=0; i<6; ++i)
+    {
+        items.push_back(new Ghost(p.x+random_in_but_not_in(14,7),p.y+random_in_but_not_in(14,7)));
     }
 }
 

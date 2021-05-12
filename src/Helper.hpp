@@ -24,7 +24,7 @@ class Helper:public Item
         }
     };
 
-    void move(uint8_t cell) {
+    void move(Player &p, uint8_t cell) {
         // roughly 50% percent of moving, and 12.5% in each direction (if open)
         switch(rand()%8){
             case 0: //N
@@ -58,11 +58,12 @@ class Helper:public Item
         std::string str = "";
         if (distance(p)==0)
         {
-            str += SSTR("A long time ago I found something that woosh me ");
+            str += SSTR("A long time ago I found something (it buzzzed when I was around it) that wooshes me ");
             if (lie) {
-              str += SSTR("at least 100 cells away ! They are really really rare but if you found one you must avoid it...");
+              str += SSTR("at least 50 cells away ! They are really really rare but if you found one you must avoid it...");
             } else {
-              str += SSTR("at most 10 cells away ! I certainly know that there is 16 of them in the 20x20 square around the starting point...");
+              str += SSTR("at most 10 cells away ! I certainly know that there is 10 of them in the 20x20 square around the starting point...");
+              str += SSTR("You also can see some ghosts that will bother you I think...");
             }
         }
         return str;

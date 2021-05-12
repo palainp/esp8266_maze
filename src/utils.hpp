@@ -1,7 +1,7 @@
 #ifndef UTILS_H
 #define UTILS_H
 
-#define BUILD_INFO  "v0.3 " __DATE__
+#define BUILD_INFO  "v0.4 " __DATE__
 //#define DEBUG
 
 #include <sstream>
