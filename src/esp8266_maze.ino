@@ -22,8 +22,8 @@ Player p;
 #define RX 3
 
 const int RED = TX;
-const int GREEN = GPIO0;
-const int BLUE = GPIO2;
+const int GREEN = GPIO2;
+const int BLUE = GPIO0;
 
 /* ------------------------------------------------- */
 void print_to_client(std::string str)
@@ -152,7 +152,7 @@ void deal_with_client()
         p.reset_color();
         for (auto &i : m.items)
         {
-          i->move(m.cell(i->x,i->y));
+          i->move(p, m.cell(i->x,i->y));
           i->update_status(p);
         }
 
@@ -162,10 +162,10 @@ void deal_with_client()
         }
 
         print_to_client(m.display_cell(p));
-        /*if (m.status & exit_found)
+        if (p.status & exit_found)
         {
           m.set_level(p);
-        }*/
+        }
       }
     }
   }
