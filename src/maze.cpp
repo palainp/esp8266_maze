@@ -66,7 +66,7 @@ void Maze::set_level(Player &p)
     {
         items.push_back(new Teleport(p.x+random_in_but_not_in(20,4),p.y+random_in_but_not_in(20,4)));
     }
-    for (auto i=0; i<6; ++i)
+    for (auto i=0; i<4; ++i)
     {
         items.push_back(new Ghost(p.x+random_in_but_not_in(14,7),p.y+random_in_but_not_in(14,7)));
     }

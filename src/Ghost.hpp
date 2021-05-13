@@ -10,7 +10,7 @@ class Ghost:public Item
             "I can smmelll you coward !",
             "some cold wind comes from ",
         };
-        cell_distance = {4*4*2, 7*7*2};
+        cell_distance = {3*3*2, 5*5*2};
         cell_show_direction = {false, true};
     };
 
@@ -18,7 +18,7 @@ class Ghost:public Item
         if (distance(p)<=cell_distance[0]) {
             // linear color from 00 to FF on the blue part
             uint8_t blue = p.led_color & 0xFF;
-            uint8_t color = 254*((cell_distance[0]-distance(p))/cell_distance[0]);
+            uint8_t color = (255*(cell_distance[0]-distance(p)))/cell_distance[0];
             if (color>blue) p.led_color |= color;
         }
     };
