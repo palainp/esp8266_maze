@@ -54,7 +54,7 @@ public:
 
     uint32_t x0,y0; // upper left absolute location
     uint8_t maze[MAP_SIZE][MAP_SIZE];
-    std::vector<Item *> items;
+    std::vector<std::unique_ptr<Item>> items;
 
 private:
     bool is_loaded(int32_t x,int32_t y);

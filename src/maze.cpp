@@ -52,23 +52,23 @@ void Maze::set_level(Player &p)
     p.clear();
 
     // set the compas in the [-20,+20] square but not in the [-10,+10]
-    Compass *c = new Compass(p.x+random_in_but_not_in(20,10),p.y+random_in_but_not_in(20,10));
-    items.push_back(c);
+    std::unique_ptr<Compass> c = std::make_unique<Compass>(p.x+random_in_but_not_in(20,10),p.y+random_in_but_not_in(20,10));
 
     // set the exit in the [-60,+60] square but not in the [-30,+30] : this may produce a map reload with the default map size[+50,-50]
-    items.push_back(new Exit(p.x+random_in_but_not_in(60,30),p.y+random_in_but_not_in(60,30)));
+    items.emplace_back(std::make_unique<Exit>(p.x+random_in_but_not_in(60,30),p.y+random_in_but_not_in(60,30)));
 
     // set a liar helper and a another that tells the truth to help in the [-10,+10] square but not in the [-5,+5]
-    items.push_back(new Helper(p.x+random_in_but_not_in(10,5),p.y+random_in_but_not_in(10,5), true, c));
-    items.push_back(new Helper(p.x+random_in_but_not_in(10,5),p.y+random_in_but_not_in(10,5), false, c));
+    items.emplace_back(std::make_unique<Helper>(p.x+random_in_but_not_in(10,5),p.y+random_in_but_not_in(10,5)));
+    items.emplace_back(std::make_unique<Helper>(p.x+random_in_but_not_in(10,5),p.y+random_in_but_not_in(10,5), c->x, c->y));
+    items.emplace_back(std::move(c));
 
     for (auto i=0; i<10; ++i)
     {
-        items.push_back(new Teleport(p.x+random_in_but_not_in(20,4),p.y+random_in_but_not_in(20,4)));
+        items.emplace_back(std::make_unique<Teleport>(p.x+random_in_but_not_in(20,4),p.y+random_in_but_not_in(20,4)));
     }
     for (auto i=0; i<4; ++i)
     {
-        items.push_back(new Ghost(p.x+random_in_but_not_in(14,7),p.y+random_in_but_not_in(14,7)));
+        items.emplace_back(std::make_unique<Ghost>(p.x+random_in_but_not_in(14,7),p.y+random_in_but_not_in(14,7)));
     }
 }
 

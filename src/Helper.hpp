@@ -6,7 +6,7 @@
 class Helper:public Item
 {
     public:
-    Helper(int32_t x, int32_t y, bool is_liar, Compass *c):lie(is_liar),Item(x,y){
+    Helper(int32_t x, int32_t y):lie_(true),Item(x,y){
         cell_text = {
             "You found someone !",
             "You can hear someone speaking in the direction ",
@@ -15,13 +15,18 @@ class Helper:public Item
         cell_distance = {0, 4*4*2, 7*7*2}; // we have to hear the helper very far to really help the player
         cell_show_direction = {false, true, true};
         // here we want to appeal the player with a randomly shorter fake distance :)
-        if(is_liar) {
-            cx = x+rand()%20-10;
-            cy = y+rand()%20-10;
-        } else {
-            cx = c->x;
-            cy = c->y;
-        }
+        cx_ = x+rand()%20-10;
+        cy_ = y+rand()%20-10;
+    };
+
+    Helper(int32_t x, int32_t y, int32_t cx, int32_t cy):lie_(false),cx_(cx),cy_(cy),Item(x,y){
+        cell_text = {
+            "You found someone !",
+            "You can hear someone speaking in the direction ",
+            "The legend says that someone lives in the ",
+        };
+        cell_distance = {0, 4*4*2, 7*7*2}; // we have to hear the helper very far to really help the player
+        cell_show_direction = {false, true, true};
     };
 
     void move(Player &p, uint8_t cell) {
@@ -47,7 +52,7 @@ class Helper:public Item
     void update_status(Player &p) {
         if (distance(p)==0)
         {
-            if (lie) {
+            if (lie_) {
                 p.led_color = 0xFF0000;
             } else {
                 p.led_color = 0x00FF00;
@@ -59,7 +64,7 @@ class Helper:public Item
         if (distance(p)==0)
         {
             str += SSTR("A long time ago I found something (it buzzzed when I was around it) that wooshes me ");
-            if (lie) {
+            if (lie_) {
               str += SSTR("at least 50 cells away ! They are really really rare but if you found one you must avoid it...");
             } else {
               str += SSTR("at most 10 cells away ! I certainly know that there is 10 of them in the 20x20 square around the starting point...");
@@ -79,7 +84,7 @@ class Helper:public Item
 #else
         if (distance(p)==0){
             std::string str = " I think I wil go to ";
-            str += SSTR(cx << ","<< cy);
+            str += SSTR(cx_ << ","<< cy_);
             return str;
         } else {
             return "";
@@ -88,8 +93,8 @@ class Helper:public Item
     };
 
     private:
-        bool lie;
-        int32_t cx,cy;
+        bool lie_;
+        int32_t cx_,cy_;
 };
 
 #endif

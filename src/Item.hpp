@@ -17,7 +17,13 @@ class Item
     int32_t x, y;
 
     Item(int32_t x, int32_t y):x(x),y(y){};
-    ~Item(){};
+//  coding standard: disallow when not used
+    Item(void)                     = delete; // default ctor    (1)
+    ~Item(void)                    = default; // default dtor   (2)
+    Item(const Item&)              = delete; // copy ctor       (3)
+    Item(const Item&&)             = delete; // move ctor       (4)
+    Item& operator= (const Item&)  = delete; // copy assignment (5)
+    Item& operator= (const Item&&) = delete; // move assignment (6)
 
     virtual std::string direction(Player &p)
     {
