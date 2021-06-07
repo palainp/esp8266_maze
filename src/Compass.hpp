@@ -21,7 +21,7 @@ class Compass:public Item
             p.status |= got_compass;
         }
         if(p.status & got_compass) {
-            p.led_color = 0xAAFF00;
+            p.led_color = 0xFFFF00;
         }
     };
 
