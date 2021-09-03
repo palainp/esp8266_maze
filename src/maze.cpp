@@ -5,6 +5,13 @@
 #include "Teleport.hpp"
 #include "Ghost.hpp"
 
+#if (__cplpusplus <= 201103L) // make_unique defined with C++14, if <= C++11 we have to define it by ourselves
+template<typename T, typename... Args>
+std::unique_ptr<T> make_unique(Args&&... args) {
+    return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
+}
+#endif
+
 #define display_walls(c) (is_open_((c),N)?' ':'N')<<(is_open_((c),S)?' ':'S')<<\
                          (is_open_((c),E)?' ':'E')<<(is_open_((c),W)?' ':'W')
 

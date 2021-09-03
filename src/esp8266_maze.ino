@@ -1,13 +1,20 @@
 /* ------------------------------------------------- */
+// do not define USE_SERIAL with ESP8266/01 as we must use RX for the 3color led
+// it's just for debugging
+//#define USE_SERIAL
+// it seems that something is broken for the moment with coos, I'll check for that later...
+//#define USE_COOS
+
 #include <ESPTelnet.h>
 #include <WiFiManager.h>
+#ifdef USE_COOS
 #include "coos.h"
+#endif
 #include "maze.hpp"
 
-// do not define USE_SERIAL with ESP8266/01 as we must use RX for the 3color led
-//#define USE_SERIAL
-
+#ifdef USE_COOS
 Coos<6, 0> coos; // number 6 in the angle brackets specifies number of user tasks; 0 selects 1 ms tick
+#endif
 
 WiFiServer server(23);
 WiFiClient player;
@@ -21,7 +28,11 @@ Player p;
 #define TX 1
 #define RX 3
 
+#ifdef USE_SERIAL
+const int RED = 5; // dummy value for esp8266/01
+#else
 const int RED = TX;
+#endif
 const int GREEN = GPIO2;
 const int BLUE = GPIO0;
 
@@ -43,13 +54,17 @@ void print_to_client(std::string str)
 // ========================================
 void led_color()
 {
+#ifdef USE_COOS
   while (true)
   {
     COOS_DELAY(100);
+#endif
     analogWrite(RED, p.red_color());
     analogWrite(GREEN, p.green_color());
     analogWrite(BLUE, p.blue_color());
+#ifdef USE_COOS
   }
+#endif
 }
 
 // ========================================
@@ -57,9 +72,11 @@ void led_color()
 // ========================================
 void check_for_connection()
 {
+#ifdef USE_COOS
   while (true)
   {
     COOS_DELAY(500);
+#endif
     //check if there are any new clients
     if (server.hasClient())
     {
@@ -79,9 +96,11 @@ void check_for_connection()
         {
           player.stop();
         }
+
         player = server.available();
         print_to_client("\377\375\042\377\373\001"); // force char mode
         print_to_client(BUILD_INFO);
+
         for (std::string line : logo)
         {
           print_to_client(line);
@@ -96,7 +115,9 @@ void check_for_connection()
         print_to_client(m.display_cell(p));
       }
     }
+#ifdef USE_COOS
   }
+#endif
 }
 
 // ========================================
@@ -105,9 +126,11 @@ void check_for_connection()
 void deal_with_client()
 {
   //check clients for data
+#ifdef USE_COOS
   while (true)
   {
     COOS_DELAY(100);
+#endif
     if (player && player.connected() && player.available())
     {
       //get data from the telnet client and deal with it
@@ -168,7 +191,9 @@ void deal_with_client()
         }
       }
     }
+#ifdef USE_COOS
   }
+#endif
 }
 
 // ========================================
@@ -177,9 +202,11 @@ void deal_with_client()
 void send_from_console()
 {
   //check UART for data
+#ifdef USE_COOS
   while (true)
   {
     COOS_DELAY(500);
+#endif
     if (Serial.available())
     {
       size_t len = Serial.available();
@@ -194,9 +221,12 @@ void send_from_console()
         delay(1);
       }
     }
+#ifdef USE_COOS
   }
+#endif
 }
 
+#ifdef USE_COOS
 // ========================================
 // Clock prints current time every minute
 // ========================================
@@ -206,6 +236,7 @@ void clock_func(void)
   sprintf(buf, " %02d:%02d ", coos.hour(), coos.minute());
   Serial.print(buf);
 }
+#endif
 
 /* ------------------------------------------------- */
 void setup()
@@ -295,6 +326,7 @@ void setup()
   }
 #endif
 
+#ifdef USE_COOS
 #ifdef USE_SERIAL
   Serial.println("starting coos tasks");
   coos.register_clock(clock_func);
@@ -304,9 +336,16 @@ void setup()
   coos.register_task(deal_with_client);
   coos.register_task(led_color);
   coos.start(); // init registered tasks
+#endif
 }
 
 void loop()
 {
+#ifdef USE_COOS
   coos.run(); // Coos scheduler
+#else
+  check_for_connection();
+  deal_with_client();
+  led_color();
+#endif
 }
